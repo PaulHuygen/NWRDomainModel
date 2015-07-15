@@ -17,6 +17,7 @@ from KafNafParserPy import *
 import os
 import sys
 import json
+import time
 sys.path.append('./')
 from dbpediaEnquirerPy import *
 
@@ -282,12 +283,16 @@ for line in f:
 
 if __name__=="__main__":
 
-	if len(sys.argv)<2:
-		print "Please specify input file"
-		sys.exit(1)
-	file=sys.argv[1]
+#if len(sys.argv)<2:
+#		print "Please specify input file"
+#		sys.exit(1)
+    #changed: using stdin now
+	file=sys.stdin
+	
+	#get begin time
+	begintime = time.strftime('%Y-%m-%dT%H:%M:%S%Z')
 
-	if len(sys.argv)>2: # Local instance is specified
+	if len(sys.argv)>1: # Local instance is specified
 		my_dbpedia = Cdbpedia_enquirer(sys.argv[2])		
 	else: # default remote dbpedia
 		my_dbpedia = Cdbpedia_enquirer()
@@ -297,11 +302,11 @@ if __name__=="__main__":
 	count_all = 0
 	count_dis=0
 	#for file in os.listdir(path):
-	print file
 	parser=KafNafParser(file)
 	prestore_terms_and_tokens(parser)
 
-	out_file=file + ".out"
+    #we're using stdin now
+    #out_file=file + ".out"
 
 	all_entities=[]
 
@@ -388,7 +393,10 @@ if __name__=="__main__":
 			
 			parser.add_external_reference_to_entity(e["eid"], ext_ref)
 
-		
+	
+	endtime = time.strftime('%Y-%m-%dT%H:%M:%S%Z')
+	lp = Clp(name="popen-ned-reranker",version="1.0",btimestamp=begintime,etimestamp=endtime)
+	parser.add_linguistic_processor('entities', lp)
 
 		
-	parser.dump(out_file)
+	parser.dump()
