@@ -15,8 +15,6 @@ Note:
 
 ## How to run
 
-python domain_model.py inputfile [dbpedia-endpoint]
+cat inputfile | python domain_model.py [dbpedia-endpoint] > outpufile
 
-Currently, dbpedia-endpoint attribute allows optionally having a local endpoint instead of dbpedia remote one. Inputfile is an input NAF file. The script creates an output file with a name:
-
-outputfile = inputfile + ".out"
+Currently, dbpedia-endpoint attribute allows optionally having a local endpoint instead of dbpedia remote one. Inputfile is an input NAF file. 
