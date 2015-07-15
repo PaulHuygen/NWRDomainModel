@@ -395,7 +395,7 @@ if __name__=="__main__":
 
 	
 	endtime = time.strftime('%Y-%m-%dT%H:%M:%S%Z')
-	lp = Clp(name="popen-ned-reranker",version="1.0",btimestamp=begintime,etimestamp=endtime)
+	lp = Clp(name="VUA-popen-ned-reranker",version="1.0",btimestamp=begintime,etimestamp=endtime)
 	parser.add_linguistic_processor('entities', lp)
 
 		

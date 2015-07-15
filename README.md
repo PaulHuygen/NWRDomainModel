@@ -10,8 +10,8 @@
 In the current version, dependencies 2-4 need to be placed in the root folder of NWRDomainModel directory, on the same level with the script "domain_model.py".
 
 Note:
-- You need to install dbpediaEnquirerPy
-- Make sure the dictionary file is called lemma.json
+- You need to install dbpediaEnquirerPy dependencies: in the folder dbpediaEnquiererPy run: . install_dependencies.sh
+- Make sure the dictionary file is called lemma.json: e.g. from the NWRDomainModel directory, run: wget -O lemma.json https://www.dropbox.com/s/rl6ypazj2a9wnt5/lemma.json?dl=1
 
 ## How to run
 
