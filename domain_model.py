@@ -4,14 +4,16 @@
 Domain model for NED, NewsReader project.
 
 @author: U{Filip Ilievski<filipilievski.wordpress.com>}
+@author: U{Antske Fokkens<http://wordpress.let.vupr.nl/antske/>}
 @version: 0.1
-@contact: U{f.ilievski@vu.nl<mailto:f.ilievski@vu.nl>} 
+@contact: U{f.ilievski@vu.nl<mailto:f.ilievski@vu.nl>}
+@contact: U{antske.fokkens@vu.nl<mailto:antske.fokkens@vu.nl>}
 @since: 08-Jul-2015
 """
 
 __version__ = '0.1'
 __modified__ = '08Jul2015'
-__author__ = 'Filip Ilievski'
+__author__ = 'Filip Ilievski, Antske Fokkens'
 
 from KafNafParserPy import *
 import os
