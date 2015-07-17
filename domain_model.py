@@ -90,7 +90,8 @@ def get_initials(entity_string):
 	return initials
 
 def is_person(dblink):
-	return not dblink or ('http://dbpedia.org/ontology/Person' in my_dbpedia.get_dbpedia_ontology_labels_for_dblink(dblink))
+	return not dblink or my_dbpedia.is_person(dblink)
+	#return not dblink or ('http://dbpedia.org/ontology/Person' in my_dbpedia.get_dbpedia_ontology_labels_for_dblink(dblink))
 
 def add_entity_extref(entity, extref):
 	#print entity, extref
