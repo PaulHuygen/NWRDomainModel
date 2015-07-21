@@ -381,7 +381,6 @@ if __name__=="__main__":
 			new_entity.add_external_reference(ext_ref)
 			
 			new_entity.set_source("POCUS")
-			print file
 			parser.add_entity(new_entity)
 		elif sextref=="" and e["original"]["extref"]:
 			sextref=e["original"]["extref"]
