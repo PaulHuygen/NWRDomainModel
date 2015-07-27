@@ -5,3 +5,5 @@
 lemma.json
 other_files
 other_files/ned-disambiguation
+*.naf
+*.out
