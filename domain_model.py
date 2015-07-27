@@ -209,9 +209,9 @@ def solve_initials_and_abbreviations(entity, entity_string, all_entities): #3
 	extref=None
 	for other_entity in all_entities:
 		if other_entity!=entity:
-			if "extended" in other_entity and other_entity["extended"]["extref"]:
+			if "extended" in other_entity and other_entity["extref"]:
 				initials=other_entity["extended"]["initials"]
-				other_ref=other_entity["extended"]["extref"]
+				other_ref=other_entity["extref"]
 				if entity_string==initials:
 					extref=other_ref
 			elif other_entity["original"]["extref"]:
