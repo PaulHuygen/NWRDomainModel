@@ -209,9 +209,9 @@ def solve_initials_and_abbreviations(entity, entity_string, all_entities): #3
 	extref=None
 	for other_entity in all_entities:
 		if other_entity!=entity:
-			if "extended" in other_entity and other_entity["extref"]:
+			if "extended" in other_entity and other_entity["extended"]["extref"]:
 				initials=other_entity["extended"]["initials"]
-				other_ref=other_entity["extref"]
+				other_ref=other_entity["extended"]["extref"]
 				if entity_string==initials:
 					extref=other_ref
 			elif other_entity["original"]["extref"]:
@@ -328,7 +328,7 @@ if __name__=="__main__":
 		if ext_norm_entity_string==norm_entity_string:
 			entity_entry = {"eid": entity.get_id(), "original": {"raw": entity_string, "mention": norm_entity_string, "terms": terms, "nwr_extref": get_most_confident_link(entity), "extref": None, "initials": get_initials(norm_entity_string)}, "title": istitle}
 		else:
-			entity_entry = {"eid": entity.get_id(), "original": {"raw": entity_string, "mention": norm_entity_string, "terms": terms, "nwr_extref": get_most_confident_link(entity), "extref": None, "initials": get_initials(entity_string)}, "extended": {"mention": ext_norm_entity_string, "terms": ext_terms, "initials": get_initials(ext_norm_entity_string)}, "title": istitle, "extref": None}
+			entity_entry = {"eid": entity.get_id(), "original": {"raw": entity_string, "mention": norm_entity_string, "terms": terms, "nwr_extref": get_most_confident_link(entity), "extref": None, "initials": get_initials(entity_string)}, "extended": {"mention": ext_norm_entity_string, "terms": ext_terms, "initials": get_initials(ext_norm_entity_string), "extref": None}, "title": istitle}
 		
 		all_entities.append(entity_entry)
 
