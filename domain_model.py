@@ -1,4 +1,4 @@
-#!/usr/bin python
+#!/usr/bin/python
 
 """
 Domain model for NED, NewsReader project.
