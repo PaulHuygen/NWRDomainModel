@@ -295,7 +295,7 @@ if __name__=="__main__":
 	begintime = time.strftime('%Y-%m-%dT%H:%M:%S%Z')
 
 	if len(sys.argv)>1: # Local instance is specified
-		my_dbpedia = Cdbpedia_enquirer(sys.argv[2])		
+		my_dbpedia = Cdbpedia_enquirer(sys.argv[1])		
 	else: # default remote dbpedia
 		my_dbpedia = Cdbpedia_enquirer()
 	#path="NWR_EvalSet/"
@@ -305,99 +305,104 @@ if __name__=="__main__":
 	count_dis=0
 	#for file in os.listdir(path):
 	parser=KafNafParser(file)
-	prestore_terms_and_tokens(parser)
+    #putting the actual process in a try, except
+    #if this module breaks it should return the original naf file (and print a warning)
+	try:
+		prestore_terms_and_tokens(parser)
 
     #we're using stdin now
     #out_file=file + ".out"
 
-	all_entities=[]
 
-	for entity in parser.get_entities():
-		if entity.get_id()[0]!="e":
-			continue
-		entity_string, terms = get_entity_mention(parser, entity)
-		# Normalization step
-		if len(terms)==1 and entity_string.endswith("-based"):
-			norm_entity_string=entity_string[:-6]
-		else:
-			norm_entity_string=entity_string
-		ext_norm_entity_string, ext_terms=extend_string_with_numbers_and_nnps(norm_entity_string, terms, parser)
-		
-		istitle = (term_sentences[terms[0]]=="1")
-		
-		if ext_norm_entity_string==norm_entity_string:
-			entity_entry = {"eid": entity.get_id(), "original": {"raw": entity_string, "mention": norm_entity_string, "terms": terms, "nwr_extref": get_most_confident_link(entity), "extref": None, "initials": get_initials(norm_entity_string)}, "title": istitle}
-		else:
-			entity_entry = {"eid": entity.get_id(), "original": {"raw": entity_string, "mention": norm_entity_string, "terms": terms, "nwr_extref": get_most_confident_link(entity), "extref": None, "initials": get_initials(entity_string)}, "extended": {"mention": ext_norm_entity_string, "terms": ext_terms, "initials": get_initials(ext_norm_entity_string), "extref": None}, "title": istitle}
-		
-		all_entities.append(entity_entry)
+		all_entities=[]
 
-	for consider_title_entities in [False, True]:
+		for entity in parser.get_entities():
+			if entity.get_id()[0]!="e":
+				continue
+			entity_string, terms = get_entity_mention(parser, entity)
+			# Normalization step
+			if len(terms)==1 and entity_string.endswith("-based"):
+				norm_entity_string=entity_string[:-6]
+			else:
+				norm_entity_string=entity_string
+			ext_norm_entity_string, ext_terms=extend_string_with_numbers_and_nnps(norm_entity_string, terms, parser)
+		
+			istitle = (term_sentences[terms[0]]=="1")
+		
+			if ext_norm_entity_string==norm_entity_string:
+				entity_entry = {"eid": entity.get_id(), "original": {"raw": entity_string, "mention": norm_entity_string, "terms": terms, "nwr_extref": get_most_confident_link(entity), "extref": None, "initials": get_initials(norm_entity_string)}, "title": istitle}
+			else:
+				entity_entry = {"eid": entity.get_id(), "original": {"raw": entity_string, "mention": norm_entity_string, "terms": terms, "nwr_extref": get_most_confident_link(entity), "extref": None, "initials": get_initials(entity_string)}, "extended": {"mention": ext_norm_entity_string, "terms": ext_terms, "initials": get_initials(ext_norm_entity_string), "extref": None}, "title": istitle}
+		
+			all_entities.append(entity_entry)
+
+		for consider_title_entities in [False, True]:
+			for e in all_entities:
+				if e["title"] is consider_title_entities: # 1) Extended mention - This line ensures title entities get processed in a second iteration
+					if "extended" in e: # 1) extension
+						#e["extended"]["extref"]=occurred_in_article(e["extended"]["mention"], all_entities) or get_from_es(e["extended"]["mention"]) or get_from_dbpedia(e["extended"]["mention"]) # TODO: Try without ES
+						e["extended"]["extref"]=occurred_in_article(e["extended"]["mention"], all_entities) or get_from_es(e["extended"]["mention"]) or get_from_dbpedia(e["extended"]["mention"]) # TODO: Try without ES
+		
+			for e in all_entities:
+				if e["title"] is consider_title_entities: # 2) original mention	 - This line ensures title entities get processed in a second iteration	
+					e["original"]["extref"]=do_disambiguation(e, e["original"]["mention"], all_entities) #or get_from_es(e["original"]["mention"]) # TODO: Try without ES
+
+			for e in all_entities:
+				if e["title"] is consider_title_entities: # 3) original mention, last resort - This line ensures title entities get processed in a second iteration
+
+					if e["original"]["extref"] is None: # TODO: Enable this block later!
+						#if consider_title_entities:
+						#	e["original"]["extref"]="--NME--"
+						#else:
+						e["original"]["extref"]=e["original"]["nwr_extref"]
+
+			
+		used_ids = set()
+		stored=0
 		for e in all_entities:
-			if e["title"] is consider_title_entities: # 1) Extended mention - This line ensures title entities get processed in a second iteration
-				if "extended" in e: # 1) extension
-					#e["extended"]["extref"]=occurred_in_article(e["extended"]["mention"], all_entities) or get_from_es(e["extended"]["mention"]) or get_from_dbpedia(e["extended"]["mention"]) # TODO: Try without ES
-					e["extended"]["extref"]=occurred_in_article(e["extended"]["mention"], all_entities) or get_from_es(e["extended"]["mention"]) or get_from_dbpedia(e["extended"]["mention"]) # TODO: Try without ES
-		
-		for e in all_entities:
-			if e["title"] is consider_title_entities: # 2) original mention	 - This line ensures title entities get processed in a second iteration	
-				e["original"]["extref"]=do_disambiguation(e, e["original"]["mention"], all_entities) #or get_from_es(e["original"]["mention"]) # TODO: Try without ES
-
-		for e in all_entities:
-			if e["title"] is consider_title_entities: # 3) original mention, last resort - This line ensures title entities get processed in a second iteration
-
-				if e["original"]["extref"] is None: # TODO: Enable this block later!
-					#if consider_title_entities:
-					#	e["original"]["extref"]="--NME--"
-					#else:
-					e["original"]["extref"]=e["original"]["nwr_extref"]
-
+			sextref=""
+			mention=""
+			single=True
+			if "extended" in e and e["extended"]["extref"]:
+				sextref=e["extended"]["extref"]
+				mention=e["extended"]["mention"]
+				er = sextref
+				new_entity = Centity()
+				new_id = get_id_not_used(used_ids)
+				new_entity.set_id(new_id)
+				used_ids.add(new_id)
+				new_entity.set_comment(mention)
 			
-	used_ids = set()
-	stored=0
-	for e in all_entities:
-		sextref=""
-		mention=""
-		single=True
-		if "extended" in e and e["extended"]["extref"]:
-			sextref=e["extended"]["extref"]
-			mention=e["extended"]["mention"]
-			er = sextref
-			new_entity = Centity()
-			new_id = get_id_not_used(used_ids)
-			new_entity.set_id(new_id)
-			used_ids.add(new_id)
-			new_entity.set_comment(mention)
+				ref = Creferences()
+				ref.add_span(e["extended"]["terms"])
+				new_entity.add_reference(ref)
 			
-			ref = Creferences()
-			ref.add_span(e["extended"]["terms"])
-			new_entity.add_reference(ref)
+				ext_ref = CexternalReference()
+				ext_ref.set_resource("dbp")
+				ext_ref.set_source("POCUS")
+				ext_ref.set_reference(er)
+				ext_ref.set_confidence("1.0")
+				new_entity.add_external_reference(ext_ref)
 			
-			ext_ref = CexternalReference()
-			ext_ref.set_resource("dbp")
-			ext_ref.set_source("POCUS")
-			ext_ref.set_reference(er)
-			ext_ref.set_confidence("1.0")
-			new_entity.add_external_reference(ext_ref)
-			
-			new_entity.set_source("POCUS")
-			parser.add_entity(new_entity)
-		elif sextref=="" and e["original"]["extref"]:
-			sextref=e["original"]["extref"]
-			mention=e["original"]["mention"]
+				new_entity.set_source("POCUS")
+				parser.add_entity(new_entity)
+			elif sextref=="" and e["original"]["extref"]:
+				sextref=e["original"]["extref"]
+				mention=e["original"]["mention"]
 						
-			ext_ref = CexternalReference()
-			ext_ref.set_resource("dbp")
-			ext_ref.set_source("POCUS")
-			ext_ref.set_reference(sextref)
-			ext_ref.set_confidence("1.0")
+				ext_ref = CexternalReference()
+				ext_ref.set_resource("dbp")
+				ext_ref.set_source("POCUS")
+				ext_ref.set_reference(sextref)
+				ext_ref.set_confidence("1.0")
 			
-			parser.add_external_reference_to_entity(e["eid"], ext_ref)
+				parser.add_external_reference_to_entity(e["eid"], ext_ref)
 
 	
-	endtime = time.strftime('%Y-%m-%dT%H:%M:%S%Z')
-	lp = Clp(name="VUA-popen-ned-reranker",version="1.0",btimestamp=begintime,etimestamp=endtime)
-	parser.add_linguistic_processor('entities', lp)
-
+		endtime = time.strftime('%Y-%m-%dT%H:%M:%S%Z')
+		lp = Clp(name="VUA-popen-ned-reranker",version="1.0",btimestamp=begintime,etimestamp=endtime)
+		parser.add_linguistic_processor('entities', lp)
+	except:
+		print >> sys.stderr, 'ERROR: unkown error occurred in the process. No additional disambiguations added.'
 		
 	parser.dump()
