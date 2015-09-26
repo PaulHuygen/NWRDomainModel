@@ -289,8 +289,8 @@ if __name__=="__main__":
 #		print "Please specify input file"
 #		sys.exit(1)
     #changed: using stdin now
-	#file=sys.stdin
-	file=open("/Users/filipilievski/Processed/corpus_airbus/3835_Chinese_airlines_agree_purchase_of_Boeing_787_Dreamliners.naf", "r")
+	file=sys.stdin
+#	file=open("/Users/filipilievski/Processed/corpus_airbus/3835_Chinese_airlines_agree_purchase_of_Boeing_787_Dreamliners.naf", "r")
 	#get begin time
 	begintime = time.strftime('%Y-%m-%dT%H:%M:%S%Z')
 
