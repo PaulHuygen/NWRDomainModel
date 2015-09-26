@@ -119,13 +119,13 @@ def prestore_terms_and_tokens(parser):
 			term_sentences[term.get_id()]=token.get_sent()
 		tokens_for_term[term.get_id()]=token_arr
 
-def get_id_not_used(used_ids):
-	n = 1
-	while True:
-		possible_id = 'f'+str(n)
-		if possible_id not in used_ids:
-			return possible_id
-		n += 1
+#def get_id_not_used(used_ids):
+#	n = 1
+#	while True:
+#		possible_id = 'f'+str(n)
+#		if possible_id not in used_ids:
+#			return possible_id
+#		n += 1
 
 ##########################################################################################
 #################################### Recognition #########################################
@@ -289,8 +289,8 @@ if __name__=="__main__":
 #		print "Please specify input file"
 #		sys.exit(1)
     #changed: using stdin now
-	file=sys.stdin
-	
+	#file=sys.stdin
+	file=open("/Users/filipilievski/Processed/corpus_airbus/3835_Chinese_airlines_agree_purchase_of_Boeing_787_Dreamliners.naf", "r")
 	#get begin time
 	begintime = time.strftime('%Y-%m-%dT%H:%M:%S%Z')
 
@@ -315,10 +315,12 @@ if __name__=="__main__":
 
 
 		all_entities=[]
-
+		max_id=0
 		for entity in parser.get_entities():
 			if entity.get_id()[0]!="e":
 				continue
+			if int(entity.get_id()[1:])>max_id:
+				max_id=int(entity.get_id()[1:])
 			entity_string, terms = get_entity_mention(parser, entity)
 			# Normalization step
 			if len(terms)==1 and entity_string.endswith("-based"):
@@ -356,9 +358,7 @@ if __name__=="__main__":
 						#else:
 						e["original"]["extref"]=e["original"]["nwr_extref"]
 
-			
-		used_ids = set()
-		stored=0
+				
 		for e in all_entities:
 			sextref=""
 			mention=""
@@ -368,9 +368,9 @@ if __name__=="__main__":
 				mention=e["extended"]["mention"]
 				er = sextref
 				new_entity = Centity()
-				new_id = get_id_not_used(used_ids)
+				new_id = 'e' + str(max_id + 1)
+				max_id+=1
 				new_entity.set_id(new_id)
-				used_ids.add(new_id)
 				new_entity.set_comment(mention)
 			
 				ref = Creferences()
