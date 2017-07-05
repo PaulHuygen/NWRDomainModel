@@ -1,0 +1,11 @@
+#!/bin/bash
+thisdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $thisdir
+echo "This dir: " $thisdir
+pip install KafNafParserPy
+git clone https://github.com/rubenIzquierdo/dbpediaEnquirerPy.git
+cd dbpediaEnquirerPy.git
+bash ./install_dependencies.sh
+cd ${thisdir}
+wget -O lemma.json https://www.dropbox.com/s/rl6ypazj2a9wnt5/lemma.json?dl=1
+

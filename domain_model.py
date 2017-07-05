@@ -1,19 +1,35 @@
 #!/usr/bin/python
-
 """
 Domain model for NED, NewsReader project.
 
 @author: U{Filip Ilievski<filipilievski.wordpress.com>}
 @author: U{Antske Fokkens<http://wordpress.let.vupr.nl/antske/>}
-@version: 0.1
+@author: U{Paul Huygen}
+@version: 0.2
 @contact: U{f.ilievski@vu.nl<mailto:f.ilievski@vu.nl>}
 @contact: U{antske.fokkens@vu.nl<mailto:antske.fokkens@vu.nl>}
-@since: 08-Jul-2015
+@contact: U{paul.huygen@huygen.nl<mailto:paul.huygen@huygen.nl>}
+@since: 05-Jul-2017
 """
+# Python-3 capabilities (PH)
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import (
+         bytes, dict, int, list, object, range, str,
+         ascii, chr, hex, input, next, oct, open,
+         pow, round, super,
+         filter, map, zip)
 
-__version__ = '0.1'
-__modified__ = '08Jul2015'
-__author__ = 'Filip Ilievski, Antske Fokkens'
+#__version__ = '0.1'
+#__modified__ = '08Jul2015'
+#__author__ = 'Filip Ilievski, Antske Fokkens'
+
+__version__ = '0.2'
+__modified__ = '05Jul2017'
+__author__ = 'Filip Ilievski, Antske Fokkens, Paul Huygen (PH)'
+
+
+
 
 from KafNafParserPy import *
 import os
@@ -26,6 +42,11 @@ from dbpediaEnquirerPy import *
 ##########################################################################################
 ################################### HELPER FUNCTIONS #####################################
 ##########################################################################################
+
+# Print to standard error (PH)
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 
 def get_start_term(parser):
 	# Find the start of sentence 2 (after title)
@@ -58,7 +79,7 @@ def get_entity_terms(entity):
 		
 
 def get_terms_mention(parser, terms):
-    	term_text=[]
+	term_text=[]
 	c=0
 	new_terms=terms
 	for t in terms:
@@ -70,8 +91,8 @@ def get_terms_mention(parser, terms):
 			if (c==1 or c==len(terms)) and (word=="'" or word=="''" or word=="\""):
 				new_terms.remove(t)
 				continue
-            		term_text.append(word)
-        res=(" ").join(term_text)
+			term_text.append(word)
+	res=(" ").join(term_text)
 	return res, new_terms
 
 def get_entity_mention(parser, entity):
@@ -403,6 +424,7 @@ if __name__=="__main__":
 		lp = Clp(name="VUA-popen-ned-reranker",version="1.0",btimestamp=begintime,etimestamp=endtime)
 		parser.add_linguistic_processor('entities', lp)
 	except:
-		print >> sys.stderr, 'ERROR: unkown error occurred in the process. No additional disambiguations added.'
+# (PH)		print >> sys.stderr, 'ERROR: unkown error occurred in the process. No additional disambiguations added.'
+		eprint('ERROR: unkown error occurred in the process. No additional disambiguations added.')
 		
 	parser.dump()
