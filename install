@@ -4,7 +4,7 @@ cd $thisdir
 echo "This dir: " $thisdir
 pip install KafNafParserPy
 git clone https://github.com/rubenIzquierdo/dbpediaEnquirerPy.git
-cd dbpediaEnquirerPy.git
+cd dbpediaEnquirerPy
 bash ./install_dependencies.sh
 cd ${thisdir}
 cp -r dbpediaEnquirerPy/resources ./resources
