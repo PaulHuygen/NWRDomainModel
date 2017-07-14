@@ -7,5 +7,6 @@ git clone https://github.com/rubenIzquierdo/dbpediaEnquirerPy.git
 cd dbpediaEnquirerPy.git
 bash ./install_dependencies.sh
 cd ${thisdir}
+cp -r dbpediaEnquirerPy/resources ./resources
 wget -O lemma.json https://www.dropbox.com/s/rl6ypazj2a9wnt5/lemma.json?dl=1
 
